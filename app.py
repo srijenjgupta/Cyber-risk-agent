@@ -64,7 +64,7 @@ st.sidebar.info("This app uses Srijen Gupta's custom CrewAI agents to scout and 
 if st.button("Generate 4-Article Report") and api_key:
     try:
         # MODEL: Using Gemini 2.5 Flash-Lite (2026 standard for higher quota)
-        my_llm = LLM(model="gemini/gemini-2.0-flash-lite", api_key=api_key)
+        my_llm = LLM(model="gemini/gemini-2.5-flash-lite", api_key=api_key)
 
         scout = Agent(
             role='Cyber Scout',
