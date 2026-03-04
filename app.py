@@ -106,7 +106,7 @@ if st.button("Generate 4-Article Report") and api_key:
                 pdf = CyberPDF()
                 pdf.add_page()
                 
-for item in data[:4]: # Safety limit to 4 articles
+                for item in data[:4]: # Safety limit to 4 articles
                     # ARTICLE TITLE
                     pdf.set_font("Helvetica", 'B', 11)
                     pdf.set_text_color(180, 0, 0)
