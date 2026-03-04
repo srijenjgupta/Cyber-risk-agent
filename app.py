@@ -110,7 +110,7 @@ if st.button("Generate 4-Article Report") and api_key:
                     # ARTICLE TITLE
                     pdf.set_font("Helvetica", 'B', 11)
                     pdf.set_text_color(180, 0, 0)
-                    pdf.multi_cell(0, 6, safe_encode(item.get('title', 'N/A')))
+                    pdf.multi_cell(0, 6, safe_encode(item.get('title', 'N/A')), wrapmode="CHAR")
                     
                     # AUTHENTICITY LINK (Clickable Blue Link)
                     pdf.set_font("Helvetica", 'U', 9)
@@ -125,17 +125,17 @@ if st.button("Generate 4-Article Report") and api_key:
                     
                     pdf.set_font("Helvetica", '', 9)
                     summary = safe_encode(item.get('summary', ''))
-                    pdf.multi_cell(0, 4, f"Summary: {summary}")
+                    pdf.multi_cell(0, 4, f"Summary: {summary}", wrapmode="CHAR")
                     
                     # Risk TIP
                     pdf.set_font("Helvetica", 'I', 9)
                     pdf.set_text_color(80, 80, 80)
-                    pdf.multi_cell(0, 5, f"Risk Tip: {safe_encode(item.get('tip', ''))}")
+                    pdf.multi_cell(0, 5, f"Risk Tip: {safe_encode(item.get('tip', ''))}", wrapmode="CHAR")
                     
                     # INSURANCE Advice
                     pdf.set_font("Helvetica", 'I', 9)
                     pdf.set_text_color(80, 80, 80)
-                    pdf.multi_cell(0, 5, f"Insurance: {safe_encode(item.get('Cyber Insurance', ''))}")
+                    pdf.multi_cell(0, 5, f"Insurance: {safe_encode(item.get('Cyber Insurance', ''))}", wrapmode="CHAR")
                     
                     pdf.ln(4) # Compact spacing to fit on one page
                 
