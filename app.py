@@ -96,7 +96,7 @@ if st.button("Generate 4-Article Report") and api_key:
         )
 
         with st.spinner("🤖 Fetching 4 authentic sources..."):
-            crew = Crew(agents=[scout, analyst], tasks=[t1, t2], process=Process.sequential,max_rpm=3)
+            crew = Crew(agents=[scout, analyst], tasks=[t1, t2], process=Process.sequential,max_rpm=20)
             raw_result = crew.kickoff()
             
             json_match = re.search(r'\[.*\]', str(raw_result), re.DOTALL)
@@ -138,7 +138,7 @@ if st.button("Generate 4-Article Report") and api_key:
                     pdf.ln(4)
     
                 # --- FINAL BYTE CONVERSION ---
-                pdf_output = pdf.output(dest='S').encode('latin-1')
+                pdf_output = bytes(pdf.output())
 
                 st.success(f"✅ Authenticated {len(data[:4])} articles found.")
                 st.download_button(
