@@ -12,14 +12,24 @@ from fpdf import FPDF
 os.environ["OPENAI_API_KEY"] = "sk-placeholder"
 
 def safe_encode(text):
-    """Encodes text for Latin-1, removing incompatible symbols."""
     if not text: return ""
-    replacements = {
-        '\u2018':"'", '\u2019':"'", '\u201c':'"', '\u201d':'"',
-        '\u2013':'-', '\u2014':'-', '—':'-', '…':'...', '🛡️':''
-    }
-    for s, r in replacements.items():
-        text = text.replace(s, r)
+    # Remove problematic characters and emojis
+    rep = {'\u2018':"'", '\u2019':"'", '\u201c':'"', '\u201d':'"', '\u2013':'-', '🛡️':''}
+    for s, r in rep.items(): text = text.replace(s, r)
+    
+    # NEW: Prevent "Not enough horizontal space" error
+    # Automatically inserts a space into words longer than 35 chars (like URLs)
+    words = text.split(' ')
+    softened_words = []
+    for word in words:
+        if len(word) > 35:
+            # Slices long URLs/hashes so they can wrap
+            chunks = [word[i:i+35] for i in range(0, len(word), 35)]
+            softened_words.append(' '.join(chunks))
+        else:
+            softened_words.append(word)
+    text = ' '.join(softened_words)
+    
     return text.encode('latin-1', 'ignore').decode('latin-1')
 
 # --- 2. SEARCH TOOL ---
@@ -110,7 +120,7 @@ if st.button("Generate 4-Article Report") and api_key:
                     # ARTICLE TITLE
                     pdf.set_font("Helvetica", 'B', 11)
                     pdf.set_text_color(180, 0, 0)
-                    pdf.multi_cell(0, 6, safe_encode(item.get('title', 'N/A')), wrap_mode="CHAR")
+                    pdf.multi_cell(0, 6, safe_encode(item.get('title', 'N/A')))
                     
                     # AUTHENTICITY LINK (Clickable Blue Link)
                     pdf.set_font("Helvetica", 'U', 9)
@@ -125,17 +135,17 @@ if st.button("Generate 4-Article Report") and api_key:
                     
                     pdf.set_font("Helvetica", '', 9)
                     summary = safe_encode(item.get('summary', ''))
-                    pdf.multi_cell(0, 4, f"Summary: {summary}", wrap_mode="CHAR")
+                    pdf.multi_cell(0, 4, f"Summary: {summary}")
                     
                     # Risk TIP
                     pdf.set_font("Helvetica", 'I', 9)
                     pdf.set_text_color(80, 80, 80)
-                    pdf.multi_cell(0, 5, f"Risk Tip: {safe_encode(item.get('tip', ''))}", wrap_mode="CHAR")
+                    pdf.multi_cell(0, 5, f"Risk Tip: {safe_encode(item.get('tip', ''))}")
                     
                     # INSURANCE Advice
                     pdf.set_font("Helvetica", 'I', 9)
                     pdf.set_text_color(80, 80, 80)
-                    pdf.multi_cell(0, 5, f"Insurance: {safe_encode(item.get('Cyber Insurance', ''))}", wrap_mode="CHAR")
+                    pdf.multi_cell(0, 5, f"Insurance: {safe_encode(item.get('Cyber Insurance', ''))}")
                     
                     pdf.ln(4) # Compact spacing to fit on one page
                 
