@@ -17,18 +17,9 @@ def safe_encode(text):
     rep = {'\u2018':"'", '\u2019':"'", '\u201c':'"', '\u201d':'"', '\u2013':'-', '🛡️':''}
     for s, r in rep.items(): text = text.replace(s, r)
     
-    # NEW: Prevent "Not enough horizontal space" error
-    # Automatically inserts a space into words longer than 35 chars (like URLs)
-    words = text.split(' ')
-    softened_words = []
-    for word in words:
-        if len(word) > 35:
-            # Slices long URLs/hashes so they can wrap
-            chunks = [word[i:i+35] for i in range(0, len(word), 35)]
-            softened_words.append(' '.join(chunks))
-        else:
-            softened_words.append(word)
-    text = ' '.join(softened_words)
+    # THE BULLETPROOF FIX: Regex finds ANY block of 40 non-whitespace characters 
+    # and forces a space. This catches URLs attached to newlines.
+    text = re.sub(r'(\S{40})', r'\1 ', text)
     
     return text.encode('latin-1', 'ignore').decode('latin-1')
 
@@ -125,8 +116,10 @@ if st.button("Generate 4-Article Report") and api_key:
                     # AUTHENTICITY LINK (Clickable Blue Link)
                     pdf.set_font("Helvetica", 'U', 9)
                     pdf.set_text_color(0, 0, 255)
-                    url = item.get('url', 'Source URL missing')
-                    pdf.cell(0, 5, safe_encode(f"Read Source: {url}"), ln=1, link=url)
+                    url = item.get('url', '#')
+                    
+                    # Instead of printing the massive URL, we use a clean hyperlink
+                    pdf.cell(0, 5, "Read Official Source Document (Click Here)", ln=1, link=url)
                     
                     # INDUSTRY & SUMMARY
                     pdf.set_text_color(0, 0, 0)
