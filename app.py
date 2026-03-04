@@ -35,22 +35,21 @@ class CyberPDF(FPDF):
     def header(self):
         self.set_font('Helvetica', 'B', 15)
         self.set_text_color(20, 50, 100)
-        self.cell(0, 10, 'CYBER NEWS REPORT', 0, 1, 'C')
+        self.cell(190, 10, 'CYBER NEWS REPORT', 0, 1, 'C') # 190 prevents the auto-width bug
         self.set_font('Helvetica', 'I', 10)
         self.set_text_color(100, 100, 100)
-        self.cell(0, 5, 'Developed by Srijen Gupta', 0, 1, 'C')
+        self.cell(190, 5, 'Developed by Srijen Gupta', 0, 1, 'C')
         self.set_draw_color(20, 50, 100)
         self.line(10, 22, 200, 22)
         self.ln(10)
 
     def footer(self):
-        """Adds the disclaimer at the bottom of every page."""
         self.set_y(-15)
         self.set_font('Helvetica', 'I', 8)
         self.set_text_color(128, 128, 128)
         disclaimer = "DISCLAIMER: This report is AI-generated for informational purposes only. " \
                      "Verify all incidents with official sources before making insurance decisions."
-        self.cell(0, 10, safe_encode(disclaimer), 0, 0, 'C')
+        self.cell(190, 10, safe_encode(disclaimer), 0, 0, 'C')
 
 # --- 4. STREAMLIT UI ---
 st.set_page_config(page_title="Srijen's Cyber Agents", page_icon="🛡️")
@@ -107,41 +106,37 @@ if st.button("Generate 4-Article Report") and api_key:
                 pdf = CyberPDF()
                 pdf.add_page()
                 
-                for item in data[:4]: # Safety limit to 4 articles
+for item in data[:4]: # Safety limit to 4 articles
                     # ARTICLE TITLE
                     pdf.set_font("Helvetica", 'B', 11)
                     pdf.set_text_color(180, 0, 0)
-                    pdf.multi_cell(0, 6, safe_encode(item.get('title', 'N/A')))
+                    pdf.multi_cell(190, 6, safe_encode(item.get('title', 'N/A')))
                     
-                    # AUTHENTICITY LINK (Clickable Blue Link)
+                    # AUTHENTICITY LINK (Hide the raw text to prevent margin overflow)
                     pdf.set_font("Helvetica", 'U', 9)
                     pdf.set_text_color(0, 0, 255)
                     url = item.get('url', '#')
-                    
-                    # Instead of printing the massive URL, we use a clean hyperlink
-                    pdf.cell(0, 5, "Read Official Source Document (Click Here)", ln=1, link=url)
+                    pdf.cell(190, 5, "Read Official Source Document (Click Here)", ln=1, link=url)
                     
                     # INDUSTRY & SUMMARY
                     pdf.set_text_color(0, 0, 0)
                     pdf.set_font("Helvetica", 'B', 9)
-                    pdf.cell(0, 5, f"Industry: {safe_encode(item.get('industry', 'General'))}", ln=1)
+                    pdf.cell(190, 5, f"Industry: {safe_encode(item.get('industry', 'General'))}", ln=1)
                     
                     pdf.set_font("Helvetica", '', 9)
                     summary = safe_encode(item.get('summary', ''))
-                    pdf.multi_cell(0, 4, f"Summary: {summary}")
+                    pdf.multi_cell(190, 4, f"Summary: {summary}")
                     
                     # Risk TIP
                     pdf.set_font("Helvetica", 'I', 9)
                     pdf.set_text_color(80, 80, 80)
-                    pdf.multi_cell(0, 5, f"Risk Tip: {safe_encode(item.get('tip', ''))}")
+                    pdf.multi_cell(190, 5, f"Risk Tip: {safe_encode(item.get('tip', ''))}")
                     
                     # INSURANCE Advice
-                    pdf.set_font("Helvetica", 'I', 9)
-                    pdf.set_text_color(80, 80, 80)
-                    pdf.multi_cell(0, 5, f"Insurance: {safe_encode(item.get('Cyber Insurance', ''))}")
+                    pdf.multi_cell(190, 5, f"Insurance: {safe_encode(item.get('Cyber Insurance', ''))}")
                     
-                    pdf.ln(4) # Compact spacing to fit on one page
-                
+                    pdf.ln(4)
+    
                 # --- FINAL BYTE CONVERSION ---
                 pdf_output = pdf.output(dest='S').encode('latin-1')
 
